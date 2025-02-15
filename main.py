@@ -1,6 +1,10 @@
 import speech_recognition as sr
 from ollama import Client
 from typing import Generator
+from translate import Translator  # new import for translation
+from gtts import gTTS  # new import for TTS
+import os                 # new import for playing audio
+import tempfile          # new import for temporary file handling
 
 class OllamaClientChatBot:
     def __init__(
@@ -46,6 +50,7 @@ class OllamaClientChatBot:
         except Exception as e:
             yield f"\n[ERROR: {str(e)}]"
 
+
 def recognize_speech_from_mic(recognizer, microphone):
     """마이크로부터 음성을 인식하고 텍스트로 변환"""
     with microphone as source:
@@ -61,10 +66,14 @@ def recognize_speech_from_mic(recognizer, microphone):
             print(f"Google Speech Recognition 서비스에 접근할 수 없습니다: {e}")
             return None
 
+
 if __name__ == "__main__":
     # 음성 인식기 및 마이크 초기화
     recognizer = sr.Recognizer()
     microphone = sr.Microphone()
+
+    # 번역기 초기화 (일본어 번역)
+    translator = Translator(to_lang="ja", from_lang="ko")
 
     # 챗봇 초기화
     bot = OllamaClientChatBot(
@@ -86,11 +95,27 @@ if __name__ == "__main__":
                 print("대화를 종료합니다.")
                 break
 
-            # 챗봇 응답 스트리밍 출력
+            # 챗봇 응답 스트리밍 출력 및 전체 응답 수집
             print("Bot:", end=" ", flush=True)
+            response_chunks = []
             for chunk in bot.stream_chat(user_input):
                 print(chunk, end="", flush=True)
+                response_chunks.append(chunk)
             print()
+
+            full_response = "".join(response_chunks)
+            # 텍스트를 일본어로 번역 후 출력
+            translated_text = translator.translate(full_response)
+            print("翻訳 (Japanese):", translated_text)
+            
+            # TTS로 일본어 번역된 텍스트 출력
+            tts = gTTS(translated_text, lang='ja')
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+                temp_audio_path = fp.name
+            tts.save(temp_audio_path)
+            # Play audio directly using playsound
+            from playsound import playsound
+            playsound(temp_audio_path)
 
         except KeyboardInterrupt:
             print("\n대화를 종료합니다.")
