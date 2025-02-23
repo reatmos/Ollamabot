@@ -22,4 +22,4 @@ Chatbot use by Ollama
 1. https://pagichacha.tistory.com/293
 
 ## And..
-Run failed in Raspberry Pi :(
+- Run failed in Raspberry Pi :(
