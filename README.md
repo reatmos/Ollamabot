@@ -6,13 +6,7 @@ Chatbot use by Ollama
 - [checkpoints v2](https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_v2_0417.zip)
 
 ## Library
-- numpy
-- flask
-- SpeechRecognition
-- torch
-- nltk
-- wave
-- pygame
+- pip install numpy flask SpeechRecognition torch nltk wave pygame
 - pip install git+https://github.com/myshell-ai/MeloTTS.git
 
 ## How to Run
